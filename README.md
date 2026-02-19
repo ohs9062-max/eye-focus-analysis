@@ -38,6 +38,7 @@ node server.js
 cd ai_server
 pip install -r requirements.txt
 python main.py
+```
 
 eye-focus-analysis/
 │
