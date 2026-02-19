@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>FA-IRIS 통합 인증 시스템</title>
+
+    <!-- ==========================================================
+         UI 스타일 정의
+         - 로그인 / 회원가입 / 학습 제어 화면 통합 구성
+         - 단일 페이지 구조(SPA 유사 방식)
+    ========================================================== -->
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f0f2f5; margin: 0; }
+        .box { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 350px; }
+        h2 { text-align: center; color: #34a853; margin-bottom: 20px; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; }
+        .btn-login { background: #34a853; color: white; }
+        .btn-toggle { background: #f0f2f5; color: #555; font-size: 13px; }
+        .hidden { display: none; }
+        #welcome-msg { text-align: center; color: #1a73e8; font-weight: bold; }
+        #status-msg { text-align: center; color: #ff5722; font-weight: bold; display: none; margin-top: 15px; }
+
+        /* 학습 종료 버튼 */
+        .btn-stop { background: #ff5722; color: white; }
+
+        /* 자격증 입력 영역 (학습 모드 확장 기능) */
+        #licence-section {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+
+        <!-- ==========================================================
+             1. 로그인 영역
+        ========================================================== -->
+        <div id="login-section">
+            <h2>FA-IRIS 로그인</h2>
+            <input type="text" id="login_id" placeholder="아이디">
+            <input type="password" id="user_pwd" placeholder="비밀번호">
+            <button class="btn-login" onclick="handleLogin()">로그인</button>
+            <button class="btn-toggle" onclick="toggleView('signup')">계정이 없으신가요? 회원가입</button>
+        </div>
+
+        <!-- ==========================================================
+             2. 회원가입 영역
+        ========================================================== -->
+        <div id="signup-section" class="hidden">
+            <h2>회원가입</h2>
+            <input type="text" id="sign_id" placeholder="아이디">
+            <input type="password" id="sign_pwd" placeholder="비밀번호">
+            <input type="text" id="sign_name" placeholder="이름">
+            <input type="email" id="sign_email" placeholder="이메일">
+            <select id="sign_gender">
+                <option value="M">남성</option>
+                <option value="F">여성</option>
+            </select>
+            <input type="number" id="sign_age" placeholder="나이">
+            <button class="btn-login" onclick="handleSignup()">가입하기</button>
+            <button class="btn-toggle" onclick="toggleView('login')">이미 계정이 있나요? 로그인</button>
+        </div>
+
+        <!-- ==========================================================
+             3. 학습 제어 및 대시보드 영역
+             - 로그인 성공 후 표시
+             - 학습 시작 / 종료 / 자격증 모드 설정 포함
+        ========================================================== -->
+        <div id="welcome-section" class="hidden">
+
+            <h2 id="welcome-msg"></h2> 
+            <p id="welcome-desc" style="text-align:center;"></p>
+
+            <!-- 자격증 모드 활성화 옵션 -->
+            <div style="margin: 15px 0 5px 0; font-size: 0.95em;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="chk-licence"
+                           style="width: auto; margin: 0;"
+                           onchange="toggleLicenceInput()"> 
+                    <span>자격증 공부 모드 켜기</span>
+                </label>
+            </div>
+
+            <!-- 자격증 입력 필드 -->
+            <div id="licence-section">
+                <input type="text" id="input-licence-kind"
+                       placeholder="예: 정보처리기사, SQLD">
+                <small style="color:#1565c0; font-size: 0.8em;">
+                    * 학습 종료 후 AI가 맞춤 피드백을 제공합니다.
+                </small>
+            </div>
+
+            <!-- 분석 진행 상태 표시 -->
+            <p id="status-msg">
+                ⏳ 학습 집중도 분석 중입니다...<br>
+                (창이 닫히면 종료됩니다)
+            </p>
+
+            <!-- 학습 제어 버튼 -->
+            <button id="btn-start" class="btn-login"
+                    onclick="startLearning()">▶ 학습 시작</button>
+
+            <button id="btn-stop" class="btn-stop hidden"
+                    onclick="stopLearning()">⏹ 학습 종료</button>
+
+            <button id="btn-action" class="btn-toggle"></button>
+        </div>
+    </div>
+
+
+    <!-- ==========================================================
+         JavaScript 로직
+         - SPA 방식 화면 전환
+         - FastAPI 서버와 비동기 통신
+    ========================================================== -->
+    <script>
+
+        let currentUserNo = null; 
+
+        /* ----------------------------------------------------------
+           자격증 입력 영역 토글
+           - 체크 여부에 따라 입력 필드 표시/숨김
+        ---------------------------------------------------------- */
+        const toggleLicenceInput = () => {
+            const isChecked = document.getElementById('chk-licence').checked;
+            const section = document.getElementById('licence-section');
+            section.style.display = isChecked ? 'block' : 'none';
+
+            if (!isChecked) {
+                document.getElementById('input-licence-kind').value = '';
+            }
+        };
+
+
+        /* ----------------------------------------------------------
+           화면 전환 로직
+           - 로그인 / 회원가입 / 환영 화면 상태 관리
+        ---------------------------------------------------------- */
+        const toggleView = (view) => {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('signup-section').classList.add('hidden');
+            document.getElementById('welcome-section').classList.add('hidden');
+
+            if(view === 'login')
+                document.getElementById('login-section').classList.remove('hidden');
+
+            else if(view === 'signup')
+                document.getElementById('signup-section').classList.remove('hidden');
+
+            else if(view === 'welcome')
+                document.getElementById('welcome-section').classList.remove('hidden');
+        };
+
+
+        /* ----------------------------------------------------------
+           학습 시작 요청
+           - 자격증 모드 포함 여부 서버 전달
+           - FastAPI의 /start-learning 호출
+        ---------------------------------------------------------- */
+        const startLearning = async () => {
+
+            if (!currentUserNo)
+                return alert("로그인 정보가 없습니다.");
+
+            const isLicenceMode = document.getElementById('chk-licence').checked;
+            const licenceKind = document.getElementById('input-licence-kind').value.trim();
+
+            if (isLicenceMode && !licenceKind)
+                return alert("자격증 이름을 입력해주세요.");
+
+            document.getElementById('btn-start').style.display = 'none';
+            document.getElementById('btn-stop').classList.remove('hidden');
+
+            document.getElementById('status-msg').innerText =
+                "⏳ 영상 분석 중입니다... (Python 분석 엔진 실행)";
+            document.getElementById('status-msg').style.display = 'block';
+
+            try {
+
+                const payload = {
+                    user_no: currentUserNo,
+                    licence_kind: isLicenceMode ? licenceKind : null
+                };
+
+                await fetch('/start-learning', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+            } catch (e) {
+                alert("서버 오류 발생");
+                location.reload();
+            }
+        };
+
+    </script>
+</body>
+</html>
