@@ -56,18 +56,6 @@ eye-focus-analysis/
 └── README.md
 
 
----
-
-# 🔥 핵심 기억
-
-✔ 코드블록은 열었으면 반드시 닫는다  
-✔ 트리 구조는 항상 ``` 로 감싼다  
-✔ ```md 같은 건 쓰지 않는다  
-
----
-
-수정 후:
-
 ```bash
 git add .
 git commit -m "Fix README formatting properly"
