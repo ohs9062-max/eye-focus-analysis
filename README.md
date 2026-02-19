@@ -54,10 +54,11 @@ eye-focus-analysis/
 │   └── schema.sql
 │
 └── README.md
-
+```
 ## 🚀 주요 기능 및 특징 (Key Features)
 
 * **실시간 시선 추적:** MediaPipe Face Mesh를 활용한 정교한 집중도 분석
 * **AI 피드백:** **Google Gemini API**를 연동하여 개인별 맞춤형 학습 조언 생성
 * **고성능 백엔드:** **FastAPI의 비동기 처리**를 통해 AI 응답 지연 시간 동안 서비스 블로킹 방지
 * **데이터 안정성:** **Pydantic**을 통한 엄격한 데이터 검증 및 **DB 트랜잭션** 관리
+```
