@@ -33,12 +33,11 @@ MediaPipe Face Mesh를 활용하여
 ```bash
 cd backend
 npm install
-node server.js
+node server.js```
 
 cd ai_server
 pip install -r requirements.txt
 python main.py
-```
 
 eye-focus-analysis/
 │
