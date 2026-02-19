@@ -35,12 +35,11 @@ cd backend
 npm install
 node server.js
 ```
-
+```
 ### 2. Ai Server 실행
 cd ai_server
 pip install -r requirements.txt
 python main.py
-
 ```
 
 ## 📂 Project Structure
