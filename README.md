@@ -41,7 +41,7 @@ cd ai_server
 pip install -r requirements.txt
 python main.py
 
-
+```
 
 ## 📂 Project Structure
 
@@ -61,7 +61,7 @@ eye-focus-analysis/
 │
 └── README.md
 
-
+```
 ---
 
 ```md
