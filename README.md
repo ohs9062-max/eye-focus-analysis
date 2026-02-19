@@ -30,10 +30,10 @@ MediaPipe Face Mesh를 활용하여
 
 ### 1. Backend 실행
 
-```bash
+
 cd backend
 npm install
-node server.js```
+node server.js
 
 cd ai_server
 pip install -r requirements.txt
