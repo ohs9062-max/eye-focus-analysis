@@ -34,39 +34,41 @@ MediaPipe Face Mesh를 활용하여
 cd backend
 npm install
 node server.js
-```
-```
-### 2. Ai Server 실행
+
 cd ai_server
 pip install -r requirements.txt
 python main.py
-```
-```
-## 📂 Project Structure
 
 eye-focus-analysis/
 │
-├── backend/ # Node.js 서버
-│ ├── server.js
-│ ├── package.json
+├── backend/                # Node.js 서버
+│   ├── server.js
+│   ├── package.json
 │
-├── ai_server/ # Python 집중도 분석 엔진
-│ ├── main.py
-│ ├── requirements.txt
+├── ai_server/              # Python 집중도 분석 엔진
+│   ├── main.py
+│   ├── requirements.txt
 │
-├── database/ # DB 설계 문서
-│ ├── erd.png
-│ └── schema.sql
+├── database/               # DB 설계 문서
+│   ├── erd.png
+│   └── schema.sql
 │
 └── README.md
 
-```
 
-```md
+---
 
-## 🎯 주요 기능
+# 🔥 핵심 기억
 
-- MediaPipe 기반 눈 랜드마크 추출
-- 좌/우 눈 개폐 비율 계산
-- 양쪽 눈 차이를 통한 집중도 산출
-- Node.js 서버와 Python AI 서버 연동
+✔ 코드블록은 열었으면 반드시 닫는다  
+✔ 트리 구조는 항상 ``` 로 감싼다  
+✔ ```md 같은 건 쓰지 않는다  
+
+---
+
+수정 후:
+
+```bash
+git add .
+git commit -m "Fix README formatting properly"
+git push
