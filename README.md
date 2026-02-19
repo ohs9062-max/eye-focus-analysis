@@ -55,8 +55,12 @@ eye-focus-analysis/
 │
 └── README.md
 
+🎯 주요 기능
 
-```bash
-git add .
-git commit -m "Fix README formatting properly"
-git push
+MediaPipe 기반 눈 랜드마크 추출
+
+좌/우 눈 개폐 비율 계산
+
+양쪽 눈 차이를 통한 집중도 산출
+
+Node.js 서버와 Python AI 서버 연동
